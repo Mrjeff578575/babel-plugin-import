@@ -3,6 +3,7 @@ import Plugin from './Plugin';
 
 export default function ({ types }) {
   let plugins = null;
+  const codeVisitor = {};
 
   // Only for test
   global.__clearBabelAntdPlugin = () => {
@@ -64,6 +65,7 @@ export default function ({ types }) {
         }
       }
       applyInstance('ProgramEnter', arguments, this);  // eslint-disable-line
+      path.traverse(codeVisitor, arguments[1]);  // eslint-disable-line
     },
     exit() {
       applyInstance('ProgramExit', arguments, this);  // eslint-disable-line
@@ -92,7 +94,7 @@ export default function ({ types }) {
   };
 
   for (const method of methods) {
-    ret.visitor[method] = function () { // eslint-disable-line
+    codeVisitor[method] = ret.visitor[method] = function () { // eslint-disable-line
       applyInstance(method, arguments, ret.visitor);  // eslint-disable-line
     };
   }
